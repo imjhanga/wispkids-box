@@ -9,18 +9,23 @@ A physical Wisp for WispKids on the M5Stack CoreS3. Experimental, kept separate 
 No flash page yet? Download the `wisp-box-firmware` artifact from the latest GitHub Actions run, open
 https://espressif.github.io/esptool-js/ in Chrome, connect, and flash `wisp-box.bin` at address `0x0`.
 
-## What Wisp does (milestone 1)
+## What Wisp does
 | Do this | Wisp |
 |---|---|
 | Tap the screen | happy |
 | Tap 3 times quickly | laughs |
-| Shake gently | excited |
-| Keep shaking | dizzy |
-| Hold your hand near the top edge sensor | curious |
-| Hand very close | shy |
-| Cover it or turn off the light | drowsy, then asleep with the screen dimmed; light wakes it |
-| Leave it alone for 5 minutes | drowsy, yawns, falls asleep, then the screen turns off; tap, shake or wave to wake |
-| Tap the speaker button (top right) | volume: off, low, medium, high (remembered) |
+| Stroke Wisp slowly | loved (eyes closed, hearts) |
+| Shake gently / keep shaking | excited / dizzy |
+| Tilt the box | looks that way |
+| Hand near the top edge / very close | curious / shy |
+| Dark room | drowsy, then asleep (screen dimmed); light wakes it |
+| Turn it face-down | says goodnight, sound and screen off; turn it back up to wake |
+| Leave it alone | drowsy, yawns, asleep, screen off (2/5/10 min or never, set in the grown-up menu) |
+| Quick swipe left/right | other pages: Teach Wisp, Spells (coming soon) |
+| Low battery / plugged in | hungry / eats sparks |
+
+**Grown-up menu:** hold two opposite corners of the screen for 3 s (or the top-left corner alone for 5 s).
+Volume, brightness, screen-off time and the mood word; the version and battery level are shown at the bottom.
 
 ## Regenerate the Wisp art
 `NODE_PATH=<dir with @resvg/resvg-js> node tools/export_device_art.js ../wispkids/prototypes && python3 tools/make_sprites.py`

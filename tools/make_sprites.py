@@ -3,7 +3,7 @@ Run: python3 tools/make_sprites.py  -> firmware/src/wisp_sprites.h"""
 from PIL import Image
 import os
 MOODS = ["neutral", "happy", "laugh", "excited", "silly", "shy", "curious", "drowsy", "yawn", "sleepy",
-         "b_neutral", "b_happy", "b_shy", "b_curious"]
+         "b_neutral", "b_happy", "b_shy", "b_curious", "kind", "look_l", "look_r", "look_u"]
 MAX_W, MAX_H = 200, 190
 here = os.path.dirname(os.path.abspath(__file__))
 art = os.path.join(here, "..", "art")

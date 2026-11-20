@@ -10,13 +10,19 @@ const EXTRA = `
   b_neutral: { eyes: 'sleep', mouth: 'smile', blush: 1 },
   b_happy: { eyes: 'sleep', mouth: 'big', blush: 1 },
   b_shy: { eyes: 'sleep', mouth: 'wavy', blush: 2 },
-  b_curious: { eyes: 'sleep', brows: ['', 'up'], mouth: 'small-o' },`;
+  b_curious: { eyes: 'sleep', brows: ['', 'up'], mouth: 'small-o' },
+  look_r: { eyes: 'side', mouth: 'smile', blush: 1 },
+  look_l: { eyes: 'sidel', mouth: 'smile', blush: 1 },
+  look_u: { eyes: 'up', mouth: 'small-o', blush: 1 },
+`;
+// a left-looking copy of the game's 'side' eye (mirror of the pupil and highlight offsets)
+const SIDEL = "case 'sidel': return '<ellipse cx=\"' + (ex - 3 * s) + '\" cy=\"' + (ey + 2 * s) + '\" rx=\"' + 5 * s + '\" ry=\"' + 6.5 * s + '\" fill=\"' + INK + '\"/><circle cx=\"' + (ex - 1.5 * s) + '\" cy=\"' + (ey - 1 * s) + '\" r=\"' + 1.8 * s + '\" fill=\"#fff\"/>';\n    ";
 const FRAMES = ['neutral', 'happy', 'laugh', 'excited', 'silly', 'shy', 'curious', 'drowsy', 'yawn', 'sleepy',
-                'b_neutral', 'b_happy', 'b_shy', 'b_curious'];
+                'b_neutral', 'b_happy', 'b_shy', 'b_curious', 'kind', 'look_l', 'look_r', 'look_u'];
 const ctx = { Math, console }; ctx.window = ctx; vm.createContext(ctx);
 const art = fs.readFileSync(path.join(proto, 'season-one/art-characters.js'), 'utf8');
-if (!art.includes('var EXPR = {')) throw new Error('EXPR table not found in art-characters.js');
-vm.runInContext(art.replace('var EXPR = {', 'var EXPR = {' + EXTRA), ctx);
+if (!art.includes('var EXPR = {') || !art.includes("case 'side':")) throw new Error('art-characters.js changed: update this script');
+vm.runInContext(art.replace('var EXPR = {', 'var EXPR = {' + EXTRA).replace("case 'side':", SIDEL + "case 'side':"), ctx);
 vm.runInContext(fs.readFileSync(path.join(proto, 'season-one-v2/src/wisp2.js'), 'utf8'), ctx);
 vm.runInContext(`var WISP_COLOURS = { purple: ['#7B4DFF', '#C9B6FF'] };
 var state = { wisp: { stage: 1, colour: 'purple', path: null } }; function esc(s){return s}

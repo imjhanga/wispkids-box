@@ -36,3 +36,16 @@
 - Left alone: drowsy at 4.5 min, yawn, asleep, screen off at 5 min. Tap, shake or a hand near the sensor wakes Wisp.
   Dark room: drowsy, then asleep with the screen dimmed; light coming back wakes it.
 - Volume button made bigger and brighter (top right); version shows at the bottom for 4 s after start.
+
+## H-007 — Device UI with almost no buttons
+- 21 Nov 2026: six interactions added, all without physical buttons:
+  1. Grown-up menu: hold two opposite corners for 3 s (or the top-left corner alone for 5 s). Volume, brightness, screen-off
+     time (2/5/10 min/never), mood word on/off; version and battery shown. Replaces the on-screen volume button.
+  2. Battery icon (top right); low battery (<15%) makes Wisp "hungry" (thought bubble, once a minute); charging shows sparks
+     flying into Wisp.
+  3. Face-down = bedtime: goodnight sound, sound off, screen off; turning it face-up wakes Wisp. Which way is "up" is learned
+     at power-on and whenever the screen is touched, so it works whatever the sensor orientation.
+  4. Petting: slow strokes over Wisp give the game's "kind" face (closed happy eyes) with hearts.
+  5. Tilt: Wisp looks left, right or up (new look faces from the game's eye shapes; a left-looking copy of the "side" eye was
+     added in the export script). Tilt directions are a first guess and may need flipping on the real device.
+  6. Quick swipe left/right moves between pages: Wisp, Teach Wisp, Spells (the last two are "coming soon"), dots at the bottom.
