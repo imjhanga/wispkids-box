@@ -21,8 +21,15 @@ https://espressif.github.io/esptool-js/ in Chrome, connect, and flash `wisp-box.
 | Dark room | drowsy, then asleep (screen dimmed); light wakes it |
 | Turn it face-down | says goodnight, sound and screen off; turn it back up to wake |
 | Leave it alone | drowsy, yawns, asleep, screen off (2/5/10 min or never, set in the grown-up menu) |
-| Quick swipe left/right | other pages: Teach Wisp, Spells (coming soon) |
+| Quick swipe left/right | other pages: Teach Wisp (game), Spells (coming soon) |
 | Low battery / plugged in | hungry / eats sparks |
+
+## Game 1: Teach Wisp (swipe left from Wisp)
+1. **TEACH:** hold something inside the white square and tap a box (Star, Heart or Moon). Each tap is one example (dots show how many).
+2. Teach at least 2 boxes, then tap **TEST**. Show things to Wisp: the box it guesses glows, and the Sure Meter shows how sure it is.
+3. Hold a box for 2 seconds to empty it. Nothing is saved: examples are forgotten when the box turns off.
+
+Try: teach only red things as Star, then show a green thing. Or teach in bright light and test in dim light.
 
 **Grown-up menu:** hold two opposite corners of the screen for 3 s (or the top-left corner alone for 5 s).
 Volume, brightness, screen-off time and the mood word; the version and battery level are shown at the bottom.

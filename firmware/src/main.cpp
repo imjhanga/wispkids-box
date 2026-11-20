@@ -8,7 +8,7 @@
 //   dark room -> drowsy then asleep (screen dimmed); light wakes it
 //   turn face-down -> "goodnight", sound off, screen off; turn back up to wake
 //   left alone -> drowsy, yawn, asleep, screen off (time set in the grown-up menu)
-//   quick swipe left/right -> other pages (Teach Wisp, Spells: coming soon), dots at the bottom
+//   quick swipe left/right -> other pages: Teach Wisp (game, teach_game.h), Spells (coming soon)
 //   battery: icon top-right; low battery -> Wisp is hungry; plugged in -> Wisp eats sparks
 // Grown-up menu: hold two opposite corners for 3 s (or hold the top-left corner alone for 5 s).
 //   Volume, brightness, screen-off time, mood word on/off; version and battery shown. Settings are remembered.
@@ -294,6 +294,8 @@ static void drawComingSoon(uint32_t t, const char* title, bool camera) {
   drawLock(cx + 44, cy - 40);
 }
 
+#include "teach_game.h"
+
 // ---------- grown-up menu ----------
 static const int MENU_ROWS = 6;
 static void drawMenu() {
@@ -398,9 +400,14 @@ static void handleTouch(uint32_t now) {
 
   if (d.wasFlicked() && abs(d.distanceX()) > 50 && abs(d.distanceX()) > abs(d.distanceY())) {  // swipe pages
     int p = (int)page + (d.distanceX() < 0 ? 1 : -1);
-    if (p >= 0 && p < PAGE_COUNT) { page = (Page)p; if (volLevel) M5.Speaker.tone(1000 + p * 200, 40); }
+    if (p >= 0 && p < PAGE_COUNT) {
+      page = (Page)p;
+      if (volLevel) M5.Speaker.tone(1000 + p * 200, 40);
+      if (page == TEACH) teachEnter();
+    }
     return;
   }
+  if (page == TEACH) { teachTouch(d, now); return; }
   if (page != HOME) return;
 
   if (d.isDragging()) {  // slow strokes over Wisp = petting
@@ -599,9 +606,9 @@ void loop() {
 
   drawBackground(now, page == HOME && mood == SLEEPY);
   if (page == HOME) drawWisp(now);
-  else if (page == TEACH) drawComingSoon(now, "Teach Wisp", true);
+  else if (page == TEACH) drawTeach(now);
   else drawComingSoon(now, "Spells", false);
-  drawBattery();
+  if (page != TEACH) drawBattery();
   drawDots();
   drawLabel(now);
   drawHoldRing();

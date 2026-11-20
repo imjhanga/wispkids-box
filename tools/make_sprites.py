@@ -25,5 +25,19 @@ for m in MOODS:
         px.append(f"0x{a:02X}{r:02X}{g:02X}{b:02X}")
     out.append(f"static const uint32_t WISP_{m.upper()}[{W*H}] = {{\n" +
                ",\n".join(",".join(px[i:i+16]) for i in range(0, len(px), 16)) + "};\n")
+# small versions for game screens
+SMALL = ["neutral", "happy", "excited", "curious", "look_u", "b_neutral"]
+s2 = min(100 / w0, 96 / h0)
+W2, H2 = round(w0 * s2), round(h0 * s2)
+out.append(f"#define WISPS_W {W2}\n#define WISPS_H {H2}\n")
+for m in SMALL:
+    im = ims[m].crop(box).resize((W2, H2), Image.LANCZOS)
+    px = []
+    data = im.get_flattened_data() if hasattr(im, "get_flattened_data") else im.getdata()
+    for r, g, b, a in data:
+        if a < 8: r = g = b = a = 0
+        px.append(f"0x{a:02X}{r:02X}{g:02X}{b:02X}")
+    out.append(f"static const uint32_t WISPS_{m.upper()}[{W2*H2}] = {{\n" +
+               ",\n".join(",".join(px[i:i+16]) for i in range(0, len(px), 16)) + "};\n")
 open(os.path.join(here, "..", "firmware", "src", "wisp_sprites.h"), "w").write("\n".join(out))
-print(f"{len(MOODS)} moods at {W}x{H}")
+print(f"{len(MOODS)} moods at {W}x{H}, {len(SMALL)} small at {W2}x{H2}")

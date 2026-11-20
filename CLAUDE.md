@@ -9,8 +9,9 @@ main repo (imjhanga/WispKids) changes. This repo never writes to the main repo.
 Hardware plan: project doc "WispKids Hardware Roadmap" (claude.ai Project). Decisions: `docs/decisions.md` (H-001 onward).
 
 ## Current milestone
-M1 — Wisp lives on the device: drawn Spark Wisp, idle life, moods reacting to touch, shake, proximity and light.
-Next: M2 Teach Wisp v0 (camera, nearest-match on colour/shape features, Sure Meter), QR handshake test with the app.
+M1 done — Wisp lives on the device (game art, moods, blink, sleep, grown-up menu, battery, face-down bedtime, tilt, pages).
+M2 in test — Game 1 Teach Wisp (`firmware/src/teach_game.h`, Module 1 Field Mission). Next: confirm camera on device,
+then the Field Missions for Modules 2-8 (see project doc map), QR handshake test with the app.
 
 ## Rules — same spirit as the main repo
 - Season 1 hardware is fully offline: no Wi-Fi, no cloud, no audio or images stored or sent.

@@ -54,3 +54,15 @@
 - 21 Nov 2026: forcing rotation 1 left part of the screen unused on the real CoreS3. The firmware now picks whichever rotation
   gives a 320x240 landscape screen and logs it on the USB serial port. Grown-up menu gains "Turn screen" (normal / upside down);
   tilt directions follow the flip.
+
+## H-009 — Game 1: Teach Wisp (Module 1 Field Mission, milestone 2)
+- 21 Nov 2026: the Teach Wisp page is now a game (`firmware/src/teach_game.h`). Three boxes (Star, Heart, Moon), each holds up
+  to 8 examples. TEACH: hold a thing in the white square and tap a box. TEST (needs 2 boxes): Wisp guesses live, the guessed box
+  glows, Wisp's face and the Sure Meter show how sure it is; far from every example -> "I don't know this one!". Hold a box 2 s
+  to empty it. Kids name what each box means themselves (no typing, no fixed answers).
+- What Wisp notices: a colour histogram (12 hue + 3 grey bins), brightness and busyness of the centre square; nearest example
+  per box decides the guess. Deliberately simple, so colour and light fool it: the Module 1 lesson (narrow or biased examples
+  make AI wrong) shows up on its own.
+- Privacy: frames and examples live in memory only, never saved or sent, gone at power-off.
+- Camera settings from M5Stack's official CoreS3 example (GC0308, internal I2C released before camera init). Not yet confirmed
+  on the real device; preview colours and mirroring may need adjusting.
