@@ -20,3 +20,10 @@
 - Spark Wisp drawn in code (no image files yet) with 8 moods: calm, happy, laugh, excited, dizzy, shy, curious, sleepy.
 - Triggers: tap, 3 quick taps, shake, long shake, hand very close / near the top sensor, dark room.
 - A small mood word shows at the bottom for testing; remove before kids' trials if it distracts.
+
+## H-005 — Same Wisp as the game, and a volume button
+- 21 Nov 2026: the device now shows the exact Spark art from the game (`wisp_s1_*.png` from the main repo, copied to `art/`
+  and converted by `tools/make_sprites.py`), not a drawn approximation. Moods map to art: dizzy uses "silly", sleepy uses
+  "calm" with a dimmed scene and z's (no sleeping art exists yet). The drawn eyes lost blinking; add blink frames later if missed.
+- Speaker button in the top-right corner cycles off / low / medium / high; default is low and the choice is remembered on the
+  device (a setting only, nothing about the child).

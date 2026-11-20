@@ -19,6 +19,7 @@ https://espressif.github.io/esptool-js/ in Chrome, connect, and flash `wisp-box.
 | Hold your hand near the top edge sensor | curious |
 | Hand very close | shy |
 | Cover it or turn off the light (3 s) | falls asleep; light or a tap wakes it |
+| Tap the speaker button (top right) | volume: off, low, medium, high (remembered) |
 
 ## Build locally
 `pip install platformio && firmware/merge.sh` (output in `flash/firmware/`).
