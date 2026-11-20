@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flash Wisp Box</title>
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+<style>
+  :root { --night:#1A1033; --purple:#8657FF; --gold:#FFC24D; --text:#F5F0FF; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:grid; place-items:center; background:radial-gradient(circle at 50% 30%, #2C1A5C, var(--night) 70%); color:var(--text); font:16px/1.5 system-ui, sans-serif; }
+  main { width:min(440px, 92vw); text-align:center; padding:32px 0; }
+  img { width:160px; height:160px; }
+  h1 { margin:8px 0 4px; font-size:28px; }
+  p { margin:8px 0; color:#D3C3FF; }
+  ol { text-align:left; margin:20px auto; padding-left:22px; color:#D3C3FF; }
+  esp-web-install-button button[slot] { background:var(--gold); color:#2C1A5C; border:0; border-radius:999px; padding:14px 32px; font-size:18px; font-weight:700; cursor:pointer; }
+  .note { font-size:13px; color:#A894E0; margin-top:24px; }
+  #ver { color:var(--gold); }
+</style>
+</head>
+<body>
+<main>
+  <img src="wisp-spark.svg" alt="Wisp, The Spark">
+  <h1>Flash Wisp Box</h1>
+  <p>Put the newest Wisp onto your CoreS3. Version <span id="ver">…</span></p>
+  <ol>
+    <li>Plug the CoreS3 into this computer with a USB-C cable.</li>
+    <li>Click the button and pick the device from the list.</li>
+    <li>Wait about a minute. Wisp wakes up when it's done.</li>
+  </ol>
+  <esp-web-install-button manifest="firmware/manifest.json">
+    <button slot="activate">Install Wisp</button>
+    <span slot="unsupported">This browser can't talk to USB devices. Use Chrome or Edge on a laptop or desktop.</span>
+    <span slot="not-allowed">This page must be opened over https.</span>
+  </esp-web-install-button>
+  <p class="note">If the device doesn't show up: hold the reset button on the side for about 3 seconds until the green light turns on, then click Install again.</p>
+</main>
+<script>
+  fetch('firmware/manifest.json').then(r => r.json()).then(m => { document.getElementById('ver').textContent = m.version; }).catch(() => {});
+</script>
+</body>
+</html>
