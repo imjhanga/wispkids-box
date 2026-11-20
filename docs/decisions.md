@@ -71,3 +71,10 @@
 - 21 Nov 2026: the CoreS3's 500 mAh battery is in the DIN base; without it the level reads 0 and Wisp kept showing an empty
   battery. A battery voltage under 3 V now means "no battery": a small plug icon replaces the battery, Wisp never gets hungry,
   and the grown-up menu says "no battery found (USB power)". Battery readings are logged on the USB serial port every 30 s.
+
+## H-011 — Side (power) button
+- 21 Nov 2026: single press = sleep/wake on the Wisp page (goodnight, then screen off); in Teach Wisp it is the action button
+  (TEACH: snap an example into the selected box, outlined in white = the last box tapped; TEST: Wisp says its guess with a
+  sound); in Spells a placeholder "coming soon". Double press (within 0.5 s) = mute/unmute, shown as a toast.
+- The power chip reports presses only on release and holding ~6 s always powers off, so single presses wait 0.5 s to rule out
+  a double press. Not yet confirmed on the device.

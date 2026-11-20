@@ -23,6 +23,8 @@ https://espressif.github.io/esptool-js/ in Chrome, connect, and flash `wisp-box.
 | Leave it alone | drowsy, yawns, asleep, screen off (2/5/10 min or never, set in the grown-up menu) |
 | Quick swipe left/right | other pages: Teach Wisp (game), Spells (coming soon) |
 | Low battery / plugged in | hungry / eats sparks |
+| Side button: press | Wisp page: sleep / wake. Teach Wisp: snap an example (or Wisp says its guess in TEST) |
+| Side button: double press | sound off / on |
 
 ## Game 1: Teach Wisp (swipe left from Wisp)
 1. **TEACH:** hold something inside the white square and tap a box (Star, Heart or Moon). Each tap is one example (dots show how many).

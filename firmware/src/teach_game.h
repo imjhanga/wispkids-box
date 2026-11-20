@@ -141,6 +141,7 @@ static char sayText[40] = "Show me something!";
 static int pressBox = -1;
 static uint32_t pressStart = 0;
 static bool havePic = false;
+static int selectedBox = 0;  // the box the side button adds to (last box tapped)
 
 static void say(const char* t, uint32_t ms) { strncpy(sayText, t, sizeof(sayText) - 1); sayUntil = millis() + ms; }
 
@@ -243,6 +244,7 @@ static void drawTeach(uint32_t now) {
     bool flash = (flashBox == i && now < flashUntil + 300);
     uint16_t bg = glow ? C(120, 84, 220) : C(60, 38, 120);
     canvas.fillRoundRect(x, TILE_Y, TILE_W, TILE_H, 12, bg);
+    if (tmode == MODE_TEACH && i == selectedBox && !flash) canvas.drawRoundRect(x - 1, TILE_Y - 1, TILE_W + 2, TILE_H + 2, 13, UI);
     if (glow || flash) for (int k = 0; k < 3; k++) canvas.drawRoundRect(x - k, TILE_Y - k, TILE_W + 2 * k, TILE_H + 2 * k, 12 + k, W_GOLD);
     drawBoxIcon(i, x + TILE_W / 2, TILE_Y + 26, 18, bg);
     for (int j = 0; j < MAX_EX; j++) {  // one dot per example
@@ -256,11 +258,32 @@ static void drawTeach(uint32_t now) {
   }
 }
 
+
 static void teachSound(int kind) {
   if (volLevel == 0 || bedtime) return;
   if (kind == 0) { M5.Speaker.tone(1600, 50); delay(60); M5.Speaker.tone(2100, 70); }  // got it
   else if (kind == 1) { M5.Speaker.tone(700, 80); delay(90); M5.Speaker.tone(500, 120); }  // forgot
   else M5.Speaker.tone(1200, 40);  // switch
+}
+
+static void addExample(int b, uint32_t now) {
+  if (!havePic) return;
+  Feat f = extractFeatures();
+  if (exCount[b] < MAX_EX) examples[b][exCount[b]++] = f;
+  else { memmove(&examples[b][0], &examples[b][1], sizeof(Feat) * (MAX_EX - 1)); examples[b][MAX_EX - 1] = f; }
+  selectedBox = b;
+  flashBox = b; flashUntil = now + 250;
+  char t[40]; snprintf(t, sizeof(t), "Got it! %s x%d", BOX_NAME[b], exCount[b]); say(t, 1800);
+  teachSound(0);
+}
+
+// side (power) button inside the game: TEACH = snap an example into the selected box; TEST = Wisp says its guess
+static void teachAction(uint32_t now) {
+  if (camState != CAM_OK) return;
+  if (tmode == MODE_TEACH) { addExample(selectedBox, now); return; }
+  if (unknownThing || guessBox < 0) { if (volLevel && !bedtime) { M5.Speaker.tone(500, 90); delay(100); M5.Speaker.tone(420, 120); } return; }
+  flashBox = guessBox; flashUntil = now + 400;
+  if (volLevel && !bedtime) { int f = 900 + guessBox * 250; M5.Speaker.tone(f, 70); delay(80); M5.Speaker.tone(f + (sure > 0.5f ? 400 : 150), 110); }
 }
 
 static void teachTouch(const m5::touch_detail_t& d, uint32_t now) {
@@ -288,13 +311,7 @@ static void teachTouch(const m5::touch_detail_t& d, uint32_t now) {
     }
     if (b >= 0 && b == hit) {
       if (tmode == MODE_TEST) { tmode = MODE_TEACH; teachSound(2); }
-      if (!havePic) return;
-      Feat f = extractFeatures();
-      if (exCount[b] < MAX_EX) examples[b][exCount[b]++] = f;
-      else { memmove(&examples[b][0], &examples[b][1], sizeof(Feat) * (MAX_EX - 1)); examples[b][MAX_EX - 1] = f; }
-      flashBox = b; flashUntil = now + 250;
-      char t[40]; snprintf(t, sizeof(t), "Got it! %s x%d", BOX_NAME[b], exCount[b]); say(t, 1800);
-      teachSound(0);
+      addExample(b, now);
     }
   }
 }

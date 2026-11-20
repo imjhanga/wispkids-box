@@ -10,6 +10,7 @@
 //   left alone -> drowsy, yawn, asleep, screen off (time set in the grown-up menu)
 //   quick swipe left/right -> other pages: Teach Wisp (game, teach_game.h), Spells (coming soon)
 //   battery: icon top-right; low battery -> Wisp is hungry; plugged in -> Wisp eats sparks
+//   side button: press = sleep/wake on the Wisp page, snap in Teach Wisp, cast in Spells; double press = mute/unmute
 // Grown-up menu: hold two opposite corners for 3 s (or hold the top-left corner alone for 5 s).
 //   Volume, brightness, screen-off time, mood word on/off; version and battery shown. Settings are remembered.
 // Fully offline. Nothing about the child is stored or sent. No camera or microphone used yet.
@@ -301,6 +302,52 @@ static void drawComingSoon(uint32_t t, const char* title, bool camera) {
 }
 
 #include "teach_game.h"
+
+// ---------- side (power) button ----------
+// single press: Wisp page = sleep / wake; in a game = the game's action (snap, cast); screen off = wake
+// double press: mute / unmute. (Holding ~6 s always powers off: that is the power chip, not this code.)
+static uint32_t pwrPendingAt = 0, sleepAt = 0, toastUntil = 0;
+static char toastText[32] = "";
+static uint8_t volBeforeMute = 1;
+static void toast(const char* t, uint32_t ms) { strncpy(toastText, t, sizeof(toastText) - 1); toastUntil = millis() + ms; }
+
+static void onDoublePress(uint32_t now) {
+  if (volLevel) { volBeforeMute = volLevel; volLevel = 0; toast("Sound off", 1500); }
+  else { volLevel = volBeforeMute ? volBeforeMute : 1; applyVolume(); M5.Speaker.tone(1500, 60); toast("Sound on", 1500); }
+  applyVolume();
+  prefs.putUChar("vol", volLevel);
+}
+static void onSinglePress(uint32_t now) {
+  if (bedtime) return;
+  if (screenOff) { lastActive = 0; wake(now); return; }
+  lastActive = now;
+  if (menuOpen) return;
+  if (page == TEACH) { teachAction(now); return; }
+  if (page == SPELLS) { toast("Spells coming soon!", 1500); if (volLevel) M5.Speaker.tone(2000, 60); return; }
+  // Wisp page: goodnight, then screen off
+  setMood(SLEEPY, 0);
+  M5.Display.setBrightness(brightSleepy());
+  goodnightSound();
+  sleepAt = now + 1200;
+}
+static void handlePowerButton(uint32_t now) {
+  if (M5.BtnPWR.wasClicked()) {
+    if (pwrPendingAt && now - pwrPendingAt < 500) { pwrPendingAt = 0; onDoublePress(now); }
+    else pwrPendingAt = now;
+  }
+  if (pwrPendingAt && now - pwrPendingAt >= 500) { pwrPendingAt = 0; onSinglePress(now); }
+  if (sleepAt && now > sleepAt) { sleepAt = 0; screenDown(); }
+}
+static void drawToast(uint32_t now) {
+  if (now > toastUntil) return;
+  canvas.setTextSize(2);
+  int w = canvas.textWidth(toastText) + 28;
+  canvas.fillRoundRect(160 - w / 2, 92, w, 40, 14, C(20, 12, 40));
+  canvas.drawRoundRect(160 - w / 2, 92, w, 40, 14, W_GOLD);
+  canvas.setTextColor(UI); canvas.setTextDatum(middle_center);
+  canvas.drawString(toastText, 160, 112);
+  canvas.setTextDatum(top_left); canvas.setTextSize(1);
+}
 
 // ---------- grown-up menu ----------
 static const int MENU_ROWS = 6;
@@ -607,6 +654,7 @@ void loop() {
   static uint32_t nextSense = 0;
   if (now > nextSense) { handleLight(now); nextSense = now + 100; }
   handleBattery(now);
+  handlePowerButton(now);
   handleIdle(now);
 
   if (screenOff) { delay(30); return; }  // keep checking sensors so Wisp can wake up
@@ -624,6 +672,7 @@ void loop() {
   drawDots();
   drawLabel(now);
   drawHoldRing();
+  drawToast(now);
   canvas.pushSprite(0, 0);
   delay(16);
 }
