@@ -27,3 +27,12 @@
   "calm" with a dimmed scene and z's (no sleeping art exists yet). The drawn eyes lost blinking; add blink frames later if missed.
 - Speaker button in the top-right corner cycles off / low / medium / high; default is low and the choice is remembered on the
   device (a setting only, nothing about the child).
+
+## H-006 — Blinking, sleepy poses, screen off after 5 minutes
+- 21 Nov 2026: device frames are now rendered by the game's own art engine (`tools/export_device_art.js`, reads the main repo's
+  `season-one/art-characters.js` + `season-one-v2/src/wisp2.js` + `champion.js`), so faces match the app exactly. Device-only
+  faces are built from the game's existing eye and mouth shapes: blink (closed lids), drowsy (half eyes), yawn.
+- Idle face is the game's "neutral" (eyes open). The game's "calm" has closed eyes, which looked lifeless as a resting face.
+- Left alone: drowsy at 4.5 min, yawn, asleep, screen off at 5 min. Tap, shake or a hand near the sensor wakes Wisp.
+  Dark room: drowsy, then asleep with the screen dimmed; light coming back wakes it.
+- Volume button made bigger and brighter (top right); version shows at the bottom for 4 s after start.

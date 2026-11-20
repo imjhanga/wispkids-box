@@ -18,8 +18,12 @@ https://espressif.github.io/esptool-js/ in Chrome, connect, and flash `wisp-box.
 | Keep shaking | dizzy |
 | Hold your hand near the top edge sensor | curious |
 | Hand very close | shy |
-| Cover it or turn off the light (3 s) | falls asleep; light or a tap wakes it |
+| Cover it or turn off the light | drowsy, then asleep with the screen dimmed; light wakes it |
+| Leave it alone for 5 minutes | drowsy, yawns, falls asleep, then the screen turns off; tap, shake or wave to wake |
 | Tap the speaker button (top right) | volume: off, low, medium, high (remembered) |
+
+## Regenerate the Wisp art
+`NODE_PATH=<dir with @resvg/resvg-js> node tools/export_device_art.js ../wispkids/prototypes && python3 tools/make_sprites.py`
 
 ## Build locally
 `pip install platformio && firmware/merge.sh` (output in `flash/firmware/`).
