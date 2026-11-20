@@ -49,3 +49,8 @@
   5. Tilt: Wisp looks left, right or up (new look faces from the game's eye shapes; a left-looking copy of the "side" eye was
      added in the export script). Tilt directions are a first guess and may need flipping on the real device.
   6. Quick swipe left/right moves between pages: Wisp, Teach Wisp, Spells (the last two are "coming soon"), dots at the bottom.
+
+## H-008 — Screen orientation detected, not assumed
+- 21 Nov 2026: forcing rotation 1 left part of the screen unused on the real CoreS3. The firmware now picks whichever rotation
+  gives a 320x240 landscape screen and logs it on the USB serial port. Grown-up menu gains "Turn screen" (normal / upside down);
+  tilt directions follow the flip.

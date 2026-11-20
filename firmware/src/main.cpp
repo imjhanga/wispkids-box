@@ -38,13 +38,15 @@ static const uint32_t OFF_MS[4] = {120000, 300000, 600000, 0};  // 0 = never
 static const char* OFF_NAME[4] = {"2 min", "5 min", "10 min", "Never"};
 static uint8_t volLevel = 1, brightLevel = 1, offLevel = 1;
 static bool showLabel = true;
+static bool flipped = false;
+static uint8_t baseRotation = 1;
 
 static void applyVolume() { M5.Speaker.setVolume(VOLUMES[volLevel]); }
 static uint8_t brightNormal() { return BRIGHTS[brightLevel]; }
 static uint8_t brightSleepy() { return BRIGHTS[brightLevel] / 4 + 10; }
 static void saveSettings() {
   prefs.putUChar("vol", volLevel); prefs.putUChar("bri", brightLevel);
-  prefs.putUChar("off", offLevel); prefs.putBool("lbl", showLabel);
+  prefs.putUChar("off", offLevel); prefs.putBool("lbl", showLabel); prefs.putBool("flip", flipped);
 }
 
 // ---------- moods ----------
@@ -293,25 +295,25 @@ static void drawComingSoon(uint32_t t, const char* title, bool camera) {
 }
 
 // ---------- grown-up menu ----------
-static const int MENU_ROWS = 5;
+static const int MENU_ROWS = 6;
 static void drawMenu() {
   canvas.fillScreen(C(20, 12, 40));
   canvas.setTextDatum(top_left);
   canvas.setTextColor(UI);
   canvas.setTextSize(2);
   canvas.drawString("Grown-up settings", 14, 8);
-  const char* names[MENU_ROWS] = {"Volume", "Brightness", "Screen off", "Mood word", "Done"};
+  const char* names[MENU_ROWS] = {"Volume", "Brightness", "Screen off", "Mood word", "Turn screen", "Done"};
   const char* vals[MENU_ROWS] = {VOL_NAME[volLevel], BRIGHT_NAME[brightLevel], OFF_NAME[offLevel],
-                                 showLabel ? "On" : "Off", ""};
+                                 showLabel ? "On" : "Off", flipped ? "Upside down" : "Normal", ""};
   for (int i = 0; i < MENU_ROWS; i++) {
-    int y = 34 + i * 36;
+    int y = 30 + i * 32;
     bool done = (i == MENU_ROWS - 1);
-    canvas.fillRoundRect(10, y, 300, 32, 8, done ? W_GOLD : BTN);
+    canvas.fillRoundRect(10, y, 300, 28, 8, done ? W_GOLD : BTN);
     canvas.setTextColor(done ? C(44, 26, 92) : UI);
     canvas.setTextDatum(middle_left);
-    canvas.drawString(names[i], 22, y + 16);
+    canvas.drawString(names[i], 22, y + 14);
     canvas.setTextDatum(middle_right);
-    canvas.drawString(vals[i], 298, y + 16);
+    canvas.drawString(vals[i], 298, y + 14);
   }
   canvas.setTextDatum(bottom_center);
   canvas.setTextSize(1);
@@ -324,14 +326,15 @@ static void drawMenu() {
 }
 
 static void menuTap(int x, int y) {
-  int row = (y - 34) / 36;
-  if (y < 34 || row < 0 || row >= MENU_ROWS) return;
+  int row = (y - 30) / 32;
+  if (y < 30 || row < 0 || row >= MENU_ROWS) return;
   switch (row) {
     case 0: volLevel = (volLevel + 1) % 4; applyVolume(); if (volLevel) M5.Speaker.tone(1500, 60); break;
     case 1: brightLevel = (brightLevel + 1) % 3; M5.Display.setBrightness(brightNormal()); break;
     case 2: offLevel = (offLevel + 1) % 4; break;
     case 3: showLabel = !showLabel; break;
-    case 4: menuOpen = false; saveSettings(); setMood(HAPPY, 1200); break;
+    case 4: flipped = !flipped; M5.Display.setRotation(flipped ? (baseRotation + 2) % 4 : baseRotation); break;
+    case 5: menuOpen = false; saveSettings(); setMood(HAPPY, 1200); break;
   }
 }
 
@@ -448,6 +451,7 @@ static void handleMotion(uint32_t now) {
   // tilt (only when held upright-ish, not lying flat)
   float tx = 0, ty = 0;
   if (fabsf(az) < 0.9f) { tx = constrain(ax * 1.6f, -1.0f, 1.0f); ty = constrain(ay * 1.6f, -1.0f, 1.0f); }
+  if (flipped) { tx = -tx; ty = -ty; }
   tiltX += (tx - tiltX) * 0.1f;
   tiltY += (ty - tiltY) * 0.1f;
 
@@ -538,9 +542,15 @@ static void handleIdle(uint32_t now) {
 void setup() {
   auto cfg = M5.config();
   M5.begin(cfg);
-  M5.Display.setRotation(1);
-
+  Serial.begin(115200);
+  // Pick a landscape rotation (320x240) whatever this board's default is, then apply the grown-up "flip" setting.
   prefs.begin("wispbox", false);
+  for (int i = 0; i < 4 && M5.Display.width() < M5.Display.height(); i++) M5.Display.setRotation((M5.Display.getRotation() + 1) % 4);
+  baseRotation = M5.Display.getRotation();
+  flipped = prefs.getBool("flip", false);
+  M5.Display.setRotation(flipped ? (baseRotation + 2) % 4 : baseRotation);
+  Serial.printf("Wisp Box %s display %dx%d rotation %d\n", WISP_VERSION, M5.Display.width(), M5.Display.height(), M5.Display.getRotation());
+
   volLevel = prefs.getUChar("vol", 1); if (volLevel > 3) volLevel = 1;
   brightLevel = prefs.getUChar("bri", 1); if (brightLevel > 2) brightLevel = 1;
   offLevel = prefs.getUChar("off", 1); if (offLevel > 3) offLevel = 1;
