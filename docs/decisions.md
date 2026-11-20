@@ -66,3 +66,8 @@
 - Privacy: frames and examples live in memory only, never saved or sent, gone at power-off.
 - Camera settings from M5Stack's official CoreS3 example (GC0308, internal I2C released before camera init). Not yet confirmed
   on the real device; preview colours and mirroring may need adjusting.
+
+## H-010 — No battery = USB power, not "empty"
+- 21 Nov 2026: the CoreS3's 500 mAh battery is in the DIN base; without it the level reads 0 and Wisp kept showing an empty
+  battery. A battery voltage under 3 V now means "no battery": a small plug icon replaces the battery, Wisp never gets hungry,
+  and the grown-up menu says "no battery found (USB power)". Battery readings are logged on the USB serial port every 30 s.

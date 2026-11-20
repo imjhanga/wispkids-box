@@ -73,7 +73,7 @@ static bool screenOff = false, darkRoom = false, bedtime = false;
 static uint32_t nextBlink = 0, blinkUntil = 0;
 static float tiltX = 0, tiltY = 0;  // smoothed, -1..1
 static int batt = -1;
-static bool charging = false, wasCharging = false;
+static bool charging = false, wasCharging = false, hasBattery = false;
 
 // ---------- sounds ----------
 static void chirp(Mood m) {
@@ -168,7 +168,13 @@ static void bolt(int x, int y, uint16_t c) {
 }
 
 static void drawBattery() {
-  if (batt < 0) return;
+  if (batt < 0) {  // USB power, no battery: small plug
+    int x = 290, y = 9;
+    canvas.fillRoundRect(x, y + 3, 14, 9, 2, SOFT);
+    canvas.fillRect(x + 3, y, 2, 4, SOFT); canvas.fillRect(x + 9, y, 2, 4, SOFT);
+    canvas.fillRect(x + 6, y + 12, 2, 5, SOFT);
+    return;
+  }
   int x = 280, y = 8;
   uint16_t col = batt < 15 && !charging ? C(255, 110, 130) : UI;
   canvas.drawRoundRect(x, y, 30, 15, 3, col);
@@ -322,7 +328,7 @@ static void drawMenu() {
   canvas.setTextColor(SOFT);
   char foot[64];
   if (batt >= 0) snprintf(foot, sizeof(foot), "Wisp Box v%s  |  battery %d%%%s", WISP_VERSION, batt, charging ? " (charging)" : "");
-  else snprintf(foot, sizeof(foot), "Wisp Box v%s", WISP_VERSION);
+  else snprintf(foot, sizeof(foot), "Wisp Box v%s  |  no battery found (USB power)", WISP_VERSION);
   canvas.drawString(foot, 160, 238);
   canvas.setTextDatum(top_left);
 }
@@ -520,8 +526,14 @@ static void handleBattery(uint32_t now) {
   static uint32_t next = 0, nextHungry = 0;
   if (now < next) return;
   next = now + 2000;
-  batt = M5.Power.getBatteryLevel();
-  charging = M5.Power.isCharging() == m5::Power_Class::is_charging_t::is_charging;
+  // The CoreS3's 500 mAh battery sits in the DIN base. Without it the level reads 0, so treat a battery voltage
+  // under 3 V as "no battery": hide the icon and never make Wisp hungry.
+  int mv = M5.Power.getBatteryVoltage();
+  hasBattery = mv >= 3000;
+  batt = hasBattery ? M5.Power.getBatteryLevel() : -1;
+  charging = hasBattery && M5.Power.isCharging() == m5::Power_Class::is_charging_t::is_charging;
+  static uint32_t nextLog = 0;
+  if (now > nextLog) { Serial.printf("battery: %d mV, level %d, charging %d\n", mv, batt, charging); nextLog = now + 30000; }
   if (charging && !wasCharging && !screenOff && !bedtime) { setMood(HAPPY, 1500); chirp(HAPPY); }
   wasCharging = charging;
   if (batt >= 0 && batt < 15 && !charging && mood == CALM && now > nextHungry && !menuOpen) {
